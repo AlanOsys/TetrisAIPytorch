@@ -59,6 +59,7 @@ class Tetris:
     figure = None
     reward = 0
     game_over = False
+    noiseLevel = None
 
     def __init__(self, height, width,n=0,score=0,record=0):
         #print('Game', n,'Score',score,'Record:',record)
@@ -226,7 +227,11 @@ class Tetris:
                     if event.key == pygame.K_ESCAPE:
                         game.__init__(20, 10)
             #print(move)
-        
+        #1.5 give reward based on noise
+        if self.noiseLevel == 'high':
+            self.reward -= 0.2
+        elif self.noiseLevel == 'low':
+            self.reward += 0.1
         # 2. move
         game.go_down()
         #score = self.break_lines(False)
@@ -249,8 +254,8 @@ class Tetris:
             self.game_over = True
             reward -= 10
             self.reward -= 10
-            reward += 25*self.score
-            self.reward += 25*self.score
+            reward += 35*self.score
+            self.reward += 35*self.score
             
             
             self.reward = 0
@@ -315,4 +320,3 @@ game = Tetris(20, 10)
 counter = 0
 
 pressing_down = False
-
