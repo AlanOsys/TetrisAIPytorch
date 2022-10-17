@@ -10,12 +10,16 @@ import pygame
 #from helper import plot
 import time
 import os
+import matplotlib.pyplot as plt
+
 
 fps = 25
 counter = 0
 MAX_MEMORY = 100000
-BATCH_SIZE = 50
-LR = 0.0005
+BATCH_SIZE = 10
+LR = 0.005
+figure, ax = plt.subplots(figsize=(4,5))
+
 
 class Agent:
     def __init__(self):
@@ -30,12 +34,40 @@ class Agent:
             #os.makedirs('./model/model.pth')
             self.model.load_state_dict(torch.load('./model/model.pth'))
         #print("YES")
-   
+        plt.ion()
+
 
     def get_state(self,game):
         field = game.getField()
+        
+                
         field = np.array(field)
+        transpose = np.transpose(field)
+        noise = []
+        for i in range(0,len(transpose)):
+            counter = 0
+            for j in range(0,len(transpose[i])):
+                if transpose[i][j]:
+                    counter += 1
+            noise.append(counter)
+        #print(noise)
+        #plt.ion()
+        #plot1, = ax.plot(noise)
+        #plot1.set_ydata(noise)
+        #figure.canvas.close()
+        #figure.canvas.draw()
+        #figure.canvas.flush_events()
+
+        
+        plt.show()
+        if max(noise) - np.average(noise) > 5 or np.average(noise) - min(noise) > 5:
+            game.noiseLevel = 'high'
+        else:
+            game.noiseLevel = 'low'
+
         field = field.reshape(200,)
+        
+
         
         field = np.append(field,[game.figure.x,game.figure.rotation,game.figure.y])
         #print((field))
@@ -80,6 +112,7 @@ def train():
     game = TetrisFile.Tetris(20,10)
     if game.figure == None:
         game.figure = game.new_figure()
+        
         #print("X",game.figure.x)
     
     while True:
